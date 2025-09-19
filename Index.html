@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Generator for Character Conversion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', Arial, sans-serif;
+            margin: 0;
+            padding: 15px; /* Reduced padding */
+            background-color: #eef2f7;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px; /* Slightly narrower */
+            width: 100%;
+            margin: 15px auto; /* Reduced margin */
+            background: #ffffff;
+            padding: 30px; /* Reduced padding */
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid #e0e6ed;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px; /* Reduced margin */
+            font-size: 2em; /* Slightly smaller font */
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .form-section {
+            background-color: #f9fbfd;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 18px 20px; /* Reduced padding */
+            margin-bottom: 18px; /* Reduced margin */
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 12px; /* Reduced margin */
+            font-weight: 600;
+            color: #34495e;
+            font-size: 1em; /* Slightly smaller font */
+            border-bottom: 2px solid #aec6e4;
+            padding-bottom: 6px; /* Reduced padding */
+        }
+        select,
+        textarea,
+        input[type="text"] {
+            width: calc(100% - 20px); /* Adjust for padding and border */
+            padding: 10px; /* Reduced padding */
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95em; /* Slightly smaller font */
+            color: #495057;
+            background-color: #f8f9fa;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        select:focus,
+        textarea:focus,
+        input[type="text"]:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px; /* Reduced gap */
+            margin-top: 8px; /* Reduced margin */
+            margin-bottom: 8px; /* Reduced margin */
+        }
+        .option-group div {
+            display: flex;
+            align-items: center;
+        }
+        .option-group input[type="radio"],
+        .option-group input[type="checkbox"] {
+            margin-right: 6px; /* Reduced margin */
+            transform: scale(1.1); /* Slightly smaller scale */
+            cursor: pointer;
+        }
+        .option-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            color: #555;
+            border-bottom: none;
+            padding-bottom: 0;
+            cursor: pointer;
+            font-size: 0.9em; /* Slightly smaller font */
+        }
+        .button-group {
+            display: flex;
+            gap: 10px; /* Reduced gap */
+            margin-top: 25px; /* Reduced margin */
+            justify-content: center;
+        }
+        .button-group button {
+            padding: 12px 20px; /* Reduced padding */
+            border: none;
+            border-radius: 8px;
+            font-size: 1em; /* Slightly smaller font */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .button-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        .button-group button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .button-group button#generatePromptButton {
+            background-color: #007bff;
+            color: white;
+        }
+        .button-group button#generatePromptButton:hover {
+            background-color: #0056b3;
+        }
+        .button-group button#copyPromptButton {
+            background-color: #28a745;
+            color: white;
+        }
+        .button-group button#copyPromptButton:hover {
+            background-color: #218838;
+        }
+        #outputPrompt {
+            background-color: #e9ecef;
+            padding: 15px; /* Reduced padding */
+            border-radius: 8px;
+            min-height: 100px; /* Reduced min-height */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 25px; /* Reduced margin */
+            border: 1px dashed #adb5bd;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em; /* Slightly smaller font */
+            color: #495057;
+            line-height: 1.5; /* Reduced line-height */
+        }
+        #customBackgroundColor {
+            margin-top: 8px; /* Reduced margin */
+            width: calc(100% - 20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prompt Generator for Character Conversion</h1>
+
+        <div class="form-section">
+            <label for="mainStyle">1. สไตล์:</label>
+            <select id="mainStyle">
+                <option value="manhwa">Manhwa Style</option>
+                <option value="chibi">Chibi Style (จิบิ)</option>
+                <option value="ghibli">Ghibli Style (จิบลิ)</option>
+                <option value="doodle">Doodle Art (ดูเดิล)</option>
+                <option value="minimal">Minimal Style (มินิมอล)</option>
+                <option value="realistic">เสมือนจริง (Realistic)</option>
+                <option value="cartoon-realistic">การ์ตูนเสมือน (Cartoon Realistic)</option>
+                <option value="3d-realistic">โมเดล 3D เสมือน (3D Realistic)</option>
+                <option value="3d-cartoon-realistic">การ์ตูน 3D เสมือน (3D Cartoon Realistic)</option>
+                <option value="icon-style">ไอคอน (Icon Style)</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label>2. สัดส่วนศีรษะ:</label>
+            <div class="option-group">
+                <div>
+                    <input type="radio" id="headNormal" name="headProportion" value="normal head" checked>
+                    <label for="headNormal">หัวปกติ</label>
+                </div>
+                <div>
+                    <input type="radio" id="headBig" name="headProportion" value="big head">
+                    <label for="headBig">หัวโต (Big Head / Bobblehead)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>3. รูปแบบสี / ลายเส้น:</label>
+            <div class="option-group">
+                <div>
+                    <input type="radio" id="artTypeLineArtNoColor" name="artType" value="line art no color" checked>
+                    <label for="artTypeLineArtNoColor">ลายเส้นอย่างเดียว (Line Art - No Color)</label>
+                </div>
+                <div>
+                    <input type="radio" id="artType3DLineArtNoColor" name="artType" value="3d line art no color">
+                    <label for="artType3DLineArtNoColor">ลายเส้นอย่างเดียว 3 มิติ (3D Line Art - No Color)</label>
+                </div>
+                <div>
+                    <input type="radio" id="artTypeColored" name="artType" value="colored">
+                    <label for="artTypeColored">ลงสี (Colored)</label>
+                </div>
+                <div>
+                    <input type="radio" id="artType3DShaded" name="artType" value="3d shaded">
+                    <label for="artType3DShaded">ลงสีแสงเงา 3 มิติ (3D Shaded)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label for="background">4. พื้นหลัง:</label>
+            <select id="background">
+                <option value="default">คงเดิม (ตามสไตล์ที่เลือก)</option>
+                <option value="white">สีขาว (White background)</option>
+                <option value="transparent">พื้นหลังโปร่งใส (Transparent background)</option>
+                <option value="custom">ระบุสี/รายละเอียดพื้นหลังเอง...</option>
+            </select>
+            <input type="text" id="customBackgroundColor" placeholder="เช่น blue background, forest background, city street" style="display: none;">
+        </div>
+
+        <div class="form-section">
+            <label for="additionalDetails">5. รายละเอียดเพิ่มเติม (ไม่บังคับ):</label>
+            <textarea id="additionalDetails" rows="3" placeholder="เช่น เพศ, ท่าทาง, สีผม, เสื้อผ้า, อารมณ์, แสงเงา, รายละเอียดตัวละคร..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button id="generatePromptButton" onclick="generatePrompt()">สร้าง Prompt</button>
+            <button id="copyPromptButton" onclick="copyPrompt()">คัดลอก Prompt</button>
+        </div>
+        
+        <div class="form-section" style="margin-top: 25px; border-color: #aed6f1;">
+            <label style="border-bottom: 2px solid #6cb7f0; color: #2a65a3;">Prompt ที่สร้างขึ้น:</label>
+            <div id="outputPrompt">
+                <!-- Prompt จะแสดงที่นี่ -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generatePrompt() {
+            const mainStyle = document.getElementById('mainStyle').value;
+            const headProportion = document.querySelector('input[name="headProportion"]:checked').value;
+            let artType = document.querySelector('input[name="artType"]:checked').value;
+            const background = document.getElementById('background').value;
+            const customBackgroundColor = document.getElementById('customBackgroundColor').value.trim();
+            const additionalDetails = document.getElementById('additionalDetails').value.trim();
+
+            let prompt = `A character illustration.`;
+
+            // จัดการ Style หลัก
+            switch (mainStyle) {
+                case 'manhwa':
+                    prompt += ` Style: manhwa, webtoon, Korean art style, crisp lines, vibrant colors, dynamic posing.`;
+                    break;
+                case 'chibi':
+                    prompt += ` Style: chibi, super deformed, cute cartoon, small body, large head.`;
+                    if (headProportion === 'normal head') {
+                        prompt += ` Slightly chibi, less exaggerated head.`;
+                    }
+                    break;
+                case 'ghibli':
+                    prompt += ` Style: Ghibli inspired, Studio Ghibli art style, whimsical, hand-drawn feel, soft colors, ethereal, natural light.`;
+                    break;
+                case 'doodle':
+                    prompt += ` Style: doodle art, hand-drawn sketch, line art, playful, simple, minimalist lines, black ink.`;
+                    // Doodle มักจะเป็นลายเส้นอย่างเดียว
+                    artType = 'line art no color';
+                    break;
+                case 'minimal':
+                    prompt += ` Style: minimal, simple, flat design, clean lines, limited color palette, abstract shapes.`;
+                    // Minimal มักจะเป็นลงสีหรือลายเส้นที่เรียบง่าย
+                    if (artType === '3d line art no color' || artType === '3d shaded') {
+                        artType = 'colored'; // หรือ line art no color
+                    }
+                    break;
+                case 'realistic':
+                    prompt += ` Style: realistic, photorealistic, lifelike, high detail.`;
+                    break;
+                case 'cartoon-realistic':
+                    prompt += ` Style: semi-realistic cartoon, stylized, Disney animation style, detailed, expressive.`;
+                    break;
+                case '3d-realistic':
+                    prompt += ` Style: 3D render, highly detailed 3D model, photorealistic render, professional 3D art, octane render.`;
+                    if (artType === 'line art no color' || artType === 'colored') artType = '3d shaded';
+                    break;
+                case '3d-cartoon-realistic':
+                    prompt += ` Style: 3D cartoon, Pixar animation style, CGI, professional render, smooth shading.`;
+                    if (artType === 'line art no color' || artType === 'colored') artType = '3d shaded';
+                    break;
+                case 'icon-style':
+                    prompt = `A simple icon of a character. Style: flat design, vector, minimal, clean lines, clear background.`;
+                    if (artType === 'line art no color' || artType === '3d line art no color') {
+                        artType = 'line art no color';
+                        prompt += ` monochrome, black and white.`;
+                    } else {
+                        artType = 'colored';
+                        prompt += ` colorful.`;
+                    }
+                    break;
+            }
+
+            // จัดการสัดส่วนศีรษะ
+            if (headProportion === 'big head' && mainStyle !== 'chibi' && mainStyle !== 'icon-style' && mainStyle !== 'doodle' && mainStyle !== 'minimal') {
+                prompt += ` Character with a big head, bobblehead proportions, exaggerated head.`;
+            } else if (headProportion === 'normal head' && mainStyle === 'chibi') {
+                // Handled in chibi style
+            }
+
+
+            // จัดการ Art Type (จะถูก overrides ถ้าเลือก Icon styles, 3D styles, Doodle, Minimal)
+            if (artType === 'line art no color' && !['icon-style', 'doodle'].includes(mainStyle) && !mainStyle.startsWith('3d-')) {
+                prompt += ` Art type: clean line art, no color, black and white lines.`;
+            } else if (artType === '3d line art no color' && mainStyle.startsWith('3d-')) {
+                prompt += ` Art type: 3D line art, wireframe, no color.`;
+            } else if (artType === 'colored' && !['icon-style', 'minimal'].includes(mainStyle) && !mainStyle.startsWith('3d-')) {
+                prompt += ` Art type: colored, vibrant colors.`;
+            } else if (artType === '3d shaded' && mainStyle.startsWith('3d-')) {
+                 prompt += ` Art type: 3d shaded, realistic shading, volumetric lighting.`;
+            }
+            // สำหรับ icon-style, doodle, minimal ได้จัดการ artType ไปใน switch case ของ style หลักแล้ว
+            
+            // เพิ่มรายละเอียดเพิ่มเติม
+            if (additionalDetails) {
+                prompt += ` Details: ${additionalDetails}.`;
+            }
+
+            // จัดการพื้นหลัง
+            switch (background) {
+                case 'white':
+                    prompt += ` Background: white background, plain white.`;
+                    break;
+                case 'transparent':
+                    prompt += ` Background: transparent background.`;
+                    break;
+                case 'custom':
+                    if (customBackgroundColor) {
+                        prompt += ` Background: ${customBackgroundColor}.`;
+                    }
+                    break;
+                case 'default':
+                default:
+                    // ไม่ต้องเพิ่มอะไร ปล่อยให้โมเดลจัดการพื้นหลังตามสไตล์
+                    break;
+            }
+
+            // เพิ่มคีย์เวิร์ดคุณภาพตาม Style หลัก
+            if (mainStyle.startsWith('3d-')) {
+                prompt += ` High quality, professional 3D art, octane render, unreal engine, cinematic lighting, studio lighting.`;
+            } else if (mainStyle === 'doodle' || mainStyle === 'minimal' || mainStyle.startsWith('icon-')) {
+                prompt += ` High quality, sharp focus, clean lines, professional graphic design, crisp edges.`;
+            } else if (mainStyle === 'realistic') {
+                prompt += ` Ultra high quality, 8k, photorealistic, intricate details, natural lighting, sharp focus.`;
+            } else if (mainStyle === 'manhwa') {
+                prompt += ` High quality, highly detailed, professional illustration, trending on Artstation.`;
+            } else if (mainStyle === 'ghibli') {
+                prompt += ` High quality, detailed, beautiful, hand-drawn animation feel, watercolor textures.`;
+            }
+            else {
+                prompt += ` High quality, detailed, professional illustration.`;
+            }
+
+            document.getElementById('outputPrompt').textContent = prompt.trim(); // Trim เพื่อลบช่องว่างท้ายสุด
+        }
+
+        function copyPrompt() {
+            const promptText = document.getElementById('outputPrompt').textContent;
+            if (promptText) {
+                navigator.clipboard.writeText(promptText)
+                    .then(() => {
+                        alert('คัดลอก Prompt เรียบร้อยแล้ว!');
+                    })
+                    .catch(err => {
+                        console.error('ไม่สามารถคัดลอก Prompt ได้: ', err);
+                        alert('ไม่สามารถคัดลอก Prompt ได้ ลองคัดลอกด้วยตนเอง');
+                    });
+            } else {
+                alert('ไม่มี Prompt ให้คัดลอก กรุณาสร้าง Prompt ก่อน');
+            }
+        }
+
+        // แสดง/ซ่อนช่องระบุสีพื้นหลังเอง
+        document.getElementById('background').addEventListener('change', function() {
+            const customBackgroundInput = document.getElementById('customBackgroundColor');
+            if (this.value === 'custom') {
+                customBackgroundInput.style.display = 'block';
+            } else {
+                customBackgroundInput.style.display = 'none';
+                customBackgroundInput.value = '';
+            }
+            generatePrompt();
+        });
+
+        document.addEventListener('DOMContentLoaded', generatePrompt);
+
+        // เพิ่ม Listener สำหรับการเปลี่ยนแปลงในทุกตัวเลือก เพื่ออัปเดต Prompt ทันที
+        document.getElementById('mainStyle').addEventListener('change', generatePrompt);
+        document.querySelectorAll('input[name="headProportion"]').forEach(radio => {
+            radio.addEventListener('change', generatePrompt);
+        });
+        document.querySelectorAll('input[name="artType"]').forEach(radio => {
+            radio.addEventListener('change', generatePrompt);
+        });
+        document.getElementById('customBackgroundColor').addEventListener('input', generatePrompt);
+        document.getElementById('additionalDetails').addEventListener('input', generatePrompt);
+
+    </script>
+</body>
+</html>
